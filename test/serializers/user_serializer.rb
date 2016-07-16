@@ -1,4 +1,4 @@
-class UserSerializer < RubySerializer::JSON
+class UserSerializer < RubySerializer::Base
 
   expose :id
   expose :name

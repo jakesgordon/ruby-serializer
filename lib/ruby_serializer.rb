@@ -7,14 +7,23 @@ module RubySerializer
   DESCRIPTION = 'A general purpose library for serializing plain old ruby objects (POROs) into JSON using a declarative DSL'
   LIB         = File.dirname(__FILE__)
 
-  autoload :JSON, File.join(LIB, 'ruby_serializer/json')
+  #------------------------------------------------------------------------------------------------
+
+  autoload :Dsl,   File.join(LIB, 'ruby_serializer/dsl')
+  autoload :Base,  File.join(LIB, 'ruby_serializer/base')
+  autoload :Field, File.join(LIB, 'ruby_serializer/field')
+
+  #------------------------------------------------------------------------------------------------
+
+  def self.build(resource, options = {})
+    serializer_class = options[:with] || options[:serializer] || detect_serializer(resource)
+    serializer_class.new(resource, options[:scope])
+  end
 
   #------------------------------------------------------------------------------------------------
 
   def self.serialize(resource, options = {})
-    serializer_class = options[:with] || options[:serializer] || detect_serializer(resource)
-    serializer = serializer_class.new(resource)
-    serializer.as_json
+    build(resource, options).serialize
   end
 
   #------------------------------------------------------------------------------------------------

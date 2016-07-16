@@ -1,5 +1,5 @@
 module Namespaced
-  class BookSerializer < RubySerializer::JSON
+  class BookSerializer < RubySerializer::Base
 
     expose :id
     expose :name
