@@ -12,6 +12,13 @@ module RubySerializer
       assert_equal JAKE[:name], json[:name]
     end
 
+    def test_serialize_another_simple_poro
+      company = Company.new(LIQUIDPLANNER)
+      json = RubySerializer.serialize company
+      assert_equal LIQUIDPLANNER[:id],   json[:id]
+      assert_equal LIQUIDPLANNER[:name], json[:name]
+    end
+
     def test_serialize_namespaced_poro
       book = Namespaced::Book.new(LOTR)
       json = RubySerializer.serialize book

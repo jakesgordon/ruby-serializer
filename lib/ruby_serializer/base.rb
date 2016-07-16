@@ -28,17 +28,13 @@ module RubySerializer
 
     attr_reader :resource
 
-    def fields
-      self.class.fields
-    end
-
     def serialize_array(options)
       raise NotImplementedError
     end
 
     def serialize_object(options)
       json = {}
-      fields.each do |field|
+      self.class.fields.each do |field|
         key = field.as
         ns  = namespace(field, json)
         ns[key] = field.serialize(resource, self)

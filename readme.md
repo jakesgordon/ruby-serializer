@@ -17,6 +17,22 @@ Coming soon...
   # code goes here
 ```
 
+## TODO
+
+  * :as
+  * :namespace
+  * :only (symbol, proc)
+  * :unless (symbol, proc)
+  * :value (value, nil, symbol, proc)
+  * :root
+  * :belongs_to
+  * :has_one
+  * :has_many
+  * :includes
+  * serialize array
+  * serializer entity errors
+  * ActionController integration
+ 
 License
 =======
 
