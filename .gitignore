@@ -1,0 +1,11 @@
+/.bundle
+/log/*
+/tmp/*
+
+*.swp
+*.env
+
+.DS_Store
+._.DS_Store
+
+.byebug_history
