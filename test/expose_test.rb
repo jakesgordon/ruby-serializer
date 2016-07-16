@@ -5,7 +5,7 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
-    class ExposeTestSerializer < RubySerializer::Base
+    class Serializer < RubySerializer::Base
 
       expose :id
       expose :name
@@ -27,7 +27,7 @@ module RubySerializer
     def test_expose_options
 
       resource = OpenStruct.new(GOOGLE)
-      json     = RubySerializer.serialize resource, with: ExposeTestSerializer
+      json     = RubySerializer.serialize resource, with: Serializer
       expected = [ :id, :name, :website, :hq, :financial ]
 
       assert_set   expected,              json.keys,                           'expected only known keys to be serialized'

@@ -14,18 +14,11 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_serialize_simple_poro
-      user = User.new(JAKE)
-      json = RubySerializer.serialize user
-      assert_equal JAKE[:id],   json[:id]
-      assert_equal JAKE[:name], json[:name]
-    end
-
-    def test_serialize_another_simple_poro
       company = Company.new(GOOGLE)
       json = RubySerializer.serialize company
       assert_equal GOOGLE[:id],   json[:id]
       assert_equal GOOGLE[:name], json[:name]
-      assert_equal GOOGLE[:url],  json[:website], 'verify attribute can be exposed :as a different key'
+      assert_equal GOOGLE[:url],  json[:website]
     end
 
     def test_serialize_namespaced_poro

@@ -5,10 +5,8 @@ require 'minitest/pride'
 # require 'awesome_print'
 require 'byebug'
 
-require_relative 'models/user'
 require_relative 'models/company'
 require_relative 'models/namespaced/book'
-require_relative 'serializers/user_serializer'
 require_relative 'serializers/company_serializer'
 require_relative 'serializers/namespaced/book_serializer'
 
@@ -18,10 +16,6 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
     # FIXTURES
     #----------------------------------------------------------------------------------------------
-
-    JAKE          = { id: 42, name: 'Jake Gordon' }.freeze
-    AMY           = { id: 99, name: 'Amy McGinnis' }.freeze
-    WATSON        = { id: 123, name: 'Watson the Dog' }.freeze
 
     GOOGLE        = { id: 1003, name: 'Google',    url: 'www.google.com',    headquarters: 'Mountain View, CA', ticker: :googl, price: 734.63, cap: 504.28, ceo: 'Sundar Pichai' }.freeze
     MICROSOFT     = { id: 1009, name: 'Microsoft', url: 'www.microsoft.com', headquarters: 'Redmond, WA',       ticker: :msft,  price:  53.70, cap: 423.92, ceo: 'Satya Nadella' }.freeze
