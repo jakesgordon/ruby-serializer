@@ -2,7 +2,6 @@ require_relative '../lib/ruby_serializer'
 
 require 'minitest/autorun'
 require 'minitest/pride'
-# require 'awesome_print'
 require 'byebug'
 
 module RubySerializer

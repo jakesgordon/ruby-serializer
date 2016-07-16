@@ -21,7 +21,6 @@ Coming soon...
 
   * :only (symbol, proc)
   * :unless (symbol, proc)
-  * :value (value, nil, symbol, proc)
   * :root
   * :belongs_to
   * :has_one
