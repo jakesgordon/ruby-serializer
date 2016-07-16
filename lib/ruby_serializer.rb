@@ -23,7 +23,12 @@ module RubySerializer
   #------------------------------------------------------------------------------------------------
 
   def self.serialize(resource, options = {})
-    build(resource, options).serialize
+    build_options = {
+      with:       options.delete(:with),
+      serializer: options.delete(:serializer),
+      scope:      options.delete(:scope)
+    }
+    build(resource, build_options).serialize(options)
   end
 
   #------------------------------------------------------------------------------------------------

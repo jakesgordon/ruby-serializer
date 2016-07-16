@@ -13,11 +13,13 @@ module RubySerializer
     end
 
     def serialize(options = {})
-      if resource.respond_to? :to_ary
-        serialize_array(options)
-      else
-        serialize_object(options)
-      end
+      json = if resource.respond_to? :to_ary
+               serialize_array(options)
+             else
+               serialize_object(options)
+             end
+      json = { options[:root] => json } if options[:root]
+      json
     end
 
     #----------------------------------------------------------------------------------------------

@@ -30,16 +30,25 @@ module RubySerializer
 
     def test_basic_serialization
 
-      shape = RubySerializer.serialize Shape.new(:large, :red)
-      assert_set   [ :size, :color ], shape.keys
-      assert_equal :large,            shape[:size]
-      assert_equal :red,              shape[:color]
+      json = RubySerializer.serialize Shape.new(:large, :red)
+      assert_set   [ :size, :color ], json.keys
+      assert_equal :large,            json[:size]
+      assert_equal :red,              json[:color]
 
-      car = RubySerializer.serialize Car.new(:honda, :civic)
-      assert_set   [ :make, :model ], car.keys
-      assert_equal :honda,            car[:make]
-      assert_equal :civic,            car[:model]
+      json = RubySerializer.serialize Car.new(:honda, :civic)
+      assert_set   [ :make, :model ], json.keys
+      assert_equal :honda,            json[:make]
+      assert_equal :civic,            json[:model]
 
+    end
+
+    #----------------------------------------------------------------------------------------------
+
+    def test_serialize_with_root
+      json = RubySerializer.serialize Car.new(:honda, :civic), root: :car
+      assert_set [ :car ], json.keys
+      assert_equal :honda, json[:car][:make]
+      assert_equal :civic, json[:car][:model]
     end
 
     #----------------------------------------------------------------------------------------------
