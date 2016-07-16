@@ -7,6 +7,8 @@ module RubySerializer
   DESCRIPTION = 'A general purpose library for serializing plain old ruby objects (POROs) into JSON using a declarative DSL'
   LIB         = File.dirname(__FILE__)
 
+  autoload :JSON, File.join(LIB, 'ruby_serializer/json')
+
   #------------------------------------------------------------------------------------------------
 
 end

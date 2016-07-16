@@ -1,13 +1,23 @@
+PATH
+  remote: .
+  specs:
+    ruby-serializer (0.0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
+    awesome_print (1.7.0)
     minitest (5.9.0)
+    rake (11.2.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print (~> 1.7)
   minitest (~> 5.9)
+  rake
+  ruby-serializer!
 
 BUNDLED WITH
    1.12.3
