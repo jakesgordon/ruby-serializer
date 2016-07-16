@@ -19,7 +19,6 @@ Coming soon...
 
 ## TODO
 
-  * :namespace
   * :only (symbol, proc)
   * :unless (symbol, proc)
   * :value (value, nil, symbol, proc)

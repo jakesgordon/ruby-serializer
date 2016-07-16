@@ -1,11 +1,12 @@
 module RubySerializer
   class Field
 
-    attr_reader :field, :as, :value, :namespace
+    attr_reader :field, :as, :from, :value, :namespace
 
     def initialize(field, namespace, options)
       @field     = field.to_sym
-      @as        = options[:as] || field
+      @as        = options[:as]   || field
+      @from      = options[:from] || field
       @value     = options[:value]
       @only      = options[:only]
       @unless    = options[:unless]
@@ -14,7 +15,7 @@ module RubySerializer
 
     def serialize(resource, serializer)
       case value
-      when nil    then resource.send(field)
+      when nil    then resource.send(from)
       when Symbol then resource.send(value)
       when Proc   then serializer.instance_exec(&value)
       else
