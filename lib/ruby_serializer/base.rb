@@ -37,6 +37,7 @@ module RubySerializer
     def serialize_object(options)
       json = {}
       self.class.fields.each do |field|
+        next unless field.present?(resource, self)
         key = field.as
         ns  = namespace(field, json)
         ns[key] = field.serialize(resource, self)

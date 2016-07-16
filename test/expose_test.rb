@@ -42,6 +42,18 @@ module RubySerializer
       expose :empty,   value: nil
     end
 
+    class ConditionalSerializer < RubySerializer::Base
+      expose :id
+      expose :only_true,      value: 'only true',      only: true
+      expose :only_false,     value: 'only false',     only: false
+      expose :only_method,    value: 'only method',    only: :show
+      expose :only_dynamic,   value: 'only dynamic',   only: -> { resource.show }
+      expose :unless_true,    value: 'unless true',    unless: true
+      expose :unless_false,   value: 'unless false',   unless: false
+      expose :unless_method,  value: 'unless method',  unless: :show
+      expose :unless_dynamic, value: 'unless dynamic', unless: -> { resource.show }
+    end
+
     #----------------------------------------------------------------------------------------------
 
     def test_expose_attributes_unchanged
@@ -81,6 +93,15 @@ module RubySerializer
       assert_equal 'dynamic value (Name)', json[:dynamic]
       assert_equal 'method value',         json[:method]
       assert_equal nil,                    json[:empty]
+    end
+
+    def test_expose_attributes_conditionally
+      show        = RubySerializer.serialize Resource.new(id: ID, show: true),  with: ConditionalSerializer
+      noshow      = RubySerializer.serialize Resource.new(id: ID, show: false), with: ConditionalSerializer
+      unspecified = RubySerializer.serialize Resource.new(id: ID),              with: ConditionalSerializer
+      assert_set [ :id, :only_true, :unless_false, :only_method,   :only_dynamic   ], show.keys
+      assert_set [ :id, :only_true, :unless_false, :unless_method, :unless_dynamic ], noshow.keys
+      assert_set [ :id, :only_true, :unless_false, :unless_method, :unless_dynamic ], unspecified.keys
     end
 
     #----------------------------------------------------------------------------------------------

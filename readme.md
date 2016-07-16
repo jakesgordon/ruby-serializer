@@ -19,8 +19,6 @@ Coming soon...
 
 ## TODO
 
-  * :only (symbol, proc)
-  * :unless (symbol, proc)
   * :value, :only, :unless using a proc with access to custom named resource
   * :belongs_to
   * :has_one
