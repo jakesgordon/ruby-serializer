@@ -9,9 +9,9 @@ module RubySerializer
       user    = users(:jake)
       company = companies(:academyio)
       book    = books(:lotr)
-      assert_equal UserSerializer,             RubySerializer.serializer(user)
-      assert_equal CompanySerializer,          RubySerializer.serializer(company)
-      assert_equal Namespaced::BookSerializer, RubySerializer.serializer(book)
+      assert_equal UserSerializer,             RubySerializer.detect_serializer(user)
+      assert_equal CompanySerializer,          RubySerializer.detect_serializer(company)
+      assert_equal Namespaced::BookSerializer, RubySerializer.detect_serializer(book)
     end
 
     #----------------------------------------------------------------------------------------------

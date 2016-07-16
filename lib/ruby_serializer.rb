@@ -12,10 +12,14 @@ module RubySerializer
   #------------------------------------------------------------------------------------------------
 
   def self.serialize(resource, options = {})
-    { id: 42, name: 'Jake Gordon' }
+    serializer_class = options[:with] || options[:serializer] || detect_serializer(resource)
+    serializer = serializer_class.new(resource)
+    serializer.as_json
   end
 
-  def self.serializer(resource, scope = nil)
+  #------------------------------------------------------------------------------------------------
+
+  def self.detect_serializer(resource, scope = nil)
     namespace = resource.class.name.split("::")
     scope ||= Kernel.const_get namespace[0...-1].join("::") if namespace.length > 1
     scope ||= Kernel
