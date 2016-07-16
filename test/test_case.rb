@@ -23,13 +23,18 @@ module RubySerializer
     AMY           = { id: 99, name: 'Amy McGinnis' }.freeze
     WATSON        = { id: 123, name: 'Watson the Dog' }.freeze
 
-    ACADEMYIO     = { id: 1000, name: 'Academy IO' }.freeze
-    WASTELYTICS   = { id: 1001, name: 'Wastelytics' }.freeze
-    TRIPGRID      = { id: 1002, name: 'TripGrid' }.freeze
-    LIQUIDPLANNER = { id: 1003, name: 'LiquidPlanner' }.freeze
+    GOOGLE        = { id: 1003, name: 'Google',    url: 'www.google.com',    ticker: :googl, price: 734.63, cap: 504.28, ceo: 'Sundar Pichai' }.freeze
+    MICROSOFT     = { id: 1009, name: 'Microsoft', url: 'www.microsoft.com', ticker: :msft,  price:  53.70, cap: 423.92, ceo: 'Satya Nadella' }.freeze
+    ORACLE        = { id: 1011, name: 'Oracle',    url: 'www.oracle.com',    ticker: :orcl,  price:  41.77, cap: 173.08, ceo: 'Mark Hurd' }.freeze
 
     LOTR          = { id: 2000, isbn: '1-2-3', name: 'Lord of the Rings' }.freeze
     HARRY_POTTER  = { id: 2001, isbn: '9-9-9', name: 'Harry Potter' }.freeze
+
+    #----------------------------------------------------------------------------------------------
+
+    def assert_set(expected, actual, message)
+      assert_equal Set.new(expected), Set.new(actual), message
+    end
 
     #----------------------------------------------------------------------------------------------
 

@@ -13,10 +13,11 @@ module RubySerializer
     end
 
     def test_serialize_another_simple_poro
-      company = Company.new(LIQUIDPLANNER)
+      company = Company.new(GOOGLE)
       json = RubySerializer.serialize company
-      assert_equal LIQUIDPLANNER[:id],   json[:id]
-      assert_equal LIQUIDPLANNER[:name], json[:name]
+      assert_equal GOOGLE[:id],   json[:id]
+      assert_equal GOOGLE[:name], json[:name]
+      assert_equal GOOGLE[:url],  json[:website], 'verify attribute can be exposed :as a different key'
     end
 
     def test_serialize_namespaced_poro
