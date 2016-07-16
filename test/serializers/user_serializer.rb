@@ -1,7 +1,6 @@
-class CompanySerializer < RubySerializer::JSON
+class UserSerializer < RubySerializer::JSON
 
   expose :id
   expose :name
 
 end
-

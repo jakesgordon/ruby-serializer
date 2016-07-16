@@ -7,6 +7,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     awesome_print (1.7.0)
+    byebug (9.0.5)
     minitest (5.9.0)
     rake (11.2.2)
 
@@ -15,6 +16,7 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print (~> 1.7)
+  byebug (~> 9.0.5)
   minitest (~> 5.9)
   rake
   ruby-serializer!

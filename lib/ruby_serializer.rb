@@ -11,4 +11,18 @@ module RubySerializer
 
   #------------------------------------------------------------------------------------------------
 
+  def self.serialize(resource, options = {})
+    { id: 42, name: 'Jake Gordon' }
+  end
+
+  def self.serializer(resource, scope = nil)
+    namespace = resource.class.name.split("::")
+    scope ||= Kernel.const_get namespace[0...-1].join("::") if namespace.length > 1
+    scope ||= Kernel
+    name = namespace.last
+    scope.const_get "#{name}Serializer"
+  end
+
+  #------------------------------------------------------------------------------------------------
+
 end
