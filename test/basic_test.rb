@@ -5,6 +5,14 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
+    def test_gem_information
+      assert_equal '0.0.1',                         VERSION
+      assert_equal 'Serialize POROs to JSON',       SUMMARY
+      assert_match 'A general purpose library for', DESCRIPTION
+    end
+
+    #----------------------------------------------------------------------------------------------
+
     def test_serialize_simple_poro
       user = User.new(JAKE)
       json = RubySerializer.serialize user
