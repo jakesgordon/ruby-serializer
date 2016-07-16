@@ -38,7 +38,7 @@ module RubySerializer
       expose :id
       expose :static,  value: 'static value'
       expose :method,  value: :method_value
-      expose :dynamic, value: -> { 'dynamic value' }
+      expose :dynamic, value: -> { "dynamic value (#{resource.name})" }
       expose :empty,   value: nil
     end
 
@@ -73,14 +73,14 @@ module RubySerializer
     end
 
     def test_expose_attributes_with_custom_values
-      resource = Resource.new(id: ID, method_value: 'method value')
+      resource = Resource.new(id: ID, name: NAME, method_value: 'method value')
       json = RubySerializer.serialize resource, with: CustomValueSerializer
       assert_set [ :id, :static, :dynamic, :method, :empty ], json.keys
       assert_equal ID, json[:id]
-      assert_equal 'static value',  json[:static]
-      assert_equal 'dynamic value', json[:dynamic]
-      assert_equal 'method value',  json[:method]
-      assert_equal nil,             json[:empty]
+      assert_equal 'static value',         json[:static]
+      assert_equal 'dynamic value (Name)', json[:dynamic]
+      assert_equal 'method value',         json[:method]
+      assert_equal nil,                    json[:empty]
     end
 
     #----------------------------------------------------------------------------------------------
