@@ -37,6 +37,7 @@ module RubySerializer
 
     def serialize_object(options)
       json = {}
+      json[:errors] = resource.errors if resource.respond_to?(:valid?) && !resource.valid?
       self.class.fields.each do |field|
         next unless field.present?(resource, self)
         key = field.as

@@ -78,5 +78,18 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
+    def test_serialize_with_errors
+      resource = OpenStruct.new(color: :red, shape: :sausages, valid?: false, errors: { shape: 'is invalid' })
+      json     = RubySerializer.serialize resource, with: ShapeSerializer
+      expected = [ :color, :shape, :errors ]
+      assert_set expected,       json.keys
+      assert_equal :red,         json[:color]
+      assert_equal :sausages,    json[:shape]
+      assert_set   [ :shape ],   json[:errors].keys
+      assert_equal 'is invalid', json[:errors][:shape]
+    end
+
+    #----------------------------------------------------------------------------------------------
+
   end
 end
