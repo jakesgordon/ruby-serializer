@@ -1,6 +1,12 @@
 module RubySerializer
   module Dsl
 
+    def serializes(name)
+      define_method(name) do   # provide a friendly-name accessor to the underlying resource
+        resource
+      end
+    end
+
     def expose(field, options = {})
       fields << Field.new(field, namespace, options)
     end

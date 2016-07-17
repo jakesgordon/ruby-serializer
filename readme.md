@@ -19,7 +19,6 @@ Coming soon...
 
 ## TODO
 
-  * :value, :only, :unless using a proc with access to custom named resource
   * :belongs_to
   * :has_one
   * :has_many

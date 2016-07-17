@@ -54,6 +54,14 @@ module RubySerializer
       expose :unless_dynamic, value: 'unless dynamic', unless: -> { resource.show }
     end
 
+    class CustomResourceNameSerializer < RubySerializer::Base
+      serializes :user
+      expose :id
+      expose :value,       value: -> { "value is #{user.value}" }
+      expose :show_only,   value: 'show only',   only: ->   { user.show }
+      expose :show_unless, value: 'show unless', unless: -> { user.show }
+    end
+
     #----------------------------------------------------------------------------------------------
 
     def test_expose_attributes_unchanged
@@ -102,6 +110,15 @@ module RubySerializer
       assert_set [ :id, :only_true, :unless_false, :only_method,   :only_dynamic   ], show.keys
       assert_set [ :id, :only_true, :unless_false, :unless_method, :unless_dynamic ], noshow.keys
       assert_set [ :id, :only_true, :unless_false, :unless_method, :unless_dynamic ], unspecified.keys
+    end
+
+    def test_expose_attributes_using_custom_resource_name
+      resource = Resource.new(id: ID, value: SECRET)
+      json = RubySerializer.serialize resource, with: CustomResourceNameSerializer
+      assert_set [ :id, :value, :show_unless ], json.keys
+      assert_equal ID,                          json[:id]
+      assert_equal "value is #{SECRET}",        json[:value]
+      assert_equal "show unless",               json[:show_unless]
     end
 
     #----------------------------------------------------------------------------------------------
