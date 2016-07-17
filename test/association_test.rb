@@ -30,6 +30,8 @@ module RubySerializer
     AW = { id: :aw, name: 'Addison-Wesley',  address: LA,      books: [ PP, DP ]  }
     MS = { id: :ms, name: 'Microsoft Press', address: REDMOND, books: [ CC ]      }
 
+    PROGRAMMING = { id: :programming, name: 'Programming', books: [ PP, DP, CC ] }
+
     #----------------------------------------------------------------------------------------------
 
     class Publisher < Model
@@ -51,6 +53,11 @@ module RubySerializer
 
     class Address < Model
       attr :id, :city, :state
+    end
+
+    class Category < Model
+      attr :id, :name
+      has_many :books
     end
 
     #----------------------------------------------------------------------------------------------
@@ -81,11 +88,17 @@ module RubySerializer
       expose :state
     end
 
+    class CategorySerializer < RubySerializer::Base
+      expose   :id
+      expose   :name
+      has_many :books
+    end
+
     #----------------------------------------------------------------------------------------------
 
     def test_belongs_to
 
-      book    = books(PP, publisher: AW)
+      book    = books(PP)
       with    = serialize book, include: :publisher
       without = serialize book
 
@@ -172,6 +185,31 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
+    def test_multiple_nested_includes
+      category = categories(PROGRAMMING)
+      json     = serialize category, include: "books.publisher, books.authors"
+      assert_category  PROGRAMMING, json, with: :books
+      assert_equal     3,           json[:books].length
+      assert_book      PP,          json[:books][0], with: [ :publisher, :authors ]
+      assert_publisher AW,          json[:books][0][:publisher]
+      assert_equal     2,           json[:books][0][:authors].length
+      assert_author    HUNT,        json[:books][0][:authors][0]
+      assert_author    THOMAS,      json[:books][0][:authors][1]
+      assert_book      DP,          json[:books][1], with: [ :publisher, :authors ]
+      assert_publisher AW,          json[:books][1][:publisher]
+      assert_equal     4,           json[:books][1][:authors].length
+      assert_author    GAMMA,       json[:books][1][:authors][0]
+      assert_author    HELM,        json[:books][1][:authors][1]
+      assert_author    JOHNSON,     json[:books][1][:authors][2]
+      assert_author    VLISSIDES,   json[:books][1][:authors][3]
+      assert_book      CC,          json[:books][2], with: [ :publisher, :authors ]
+      assert_publisher MS,          json[:books][2][:publisher]
+      assert_equal     1,           json[:books][2][:authors].length
+      assert_author    MCCONNEL,    json[:books][2][:authors][0]
+    end
+
+    #----------------------------------------------------------------------------------------------
+
     private
 
     def addresses(fixture)
@@ -184,18 +222,26 @@ module RubySerializer
       author
     end
 
-    def books(fixture, options = {})
+    def books(fixture)
       book = Book.new(fixture)
-      book.publisher = publishers(options[:publisher]) if options.key?(:publisher)
+      book.publisher = publishers(fixture[:publisher_id], false)
       book.authors   = Array(fixture[:authors]).map { |a| authors(a) } if fixture.key?(:authors)
       book
     end
 
-    def publishers(fixture)
+    def publishers(fixture, include_books = true)
+      fixture = AW if fixture == :aw
+      fixture = MS if fixture == :ms
       publisher = Publisher.new(fixture)
       publisher.address = addresses(fixture[:address]) if fixture.key?(:address)
-      publisher.books = Array(fixture[:books]).map { |b| books(b) } if fixture.key?(:books)
+      publisher.books = Array(fixture[:books]).map { |b| books(b) } if include_books && fixture[:books]
       publisher
+    end
+
+    def categories(fixture)
+      category = Category.new(fixture)
+      category.books = Array(fixture[:books]).map { |b| books(b) } if fixture.key?(:books)
+      category
     end
 
     #----------------------------------------------------------------------------------------------
@@ -227,6 +273,13 @@ module RubySerializer
       assert_equal expected[:id],          actual[:id]
       assert_equal expected[:city],        actual[:city]
       assert_equal expected[:state],       actual[:state]
+    end
+
+    def assert_category(expected, actual, options = {})
+      expected_keys = [ :id, :name ] + Array(options[:with])
+      assert_equal expected_keys,   actual.keys
+      assert_equal expected[:id],   actual[:id]
+      assert_equal expected[:name], actual[:name]
     end
 
     #----------------------------------------------------------------------------------------------
