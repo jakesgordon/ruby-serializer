@@ -116,12 +116,17 @@ You can expose attributes conditionally using `:only` and `:unless`
   user = User.new(id: 1)
   json = RubySerializer.as_json user
 
-  # { id: 2 } 
+  # { id: 1 } 
 
-  user = User.new(id: 2, name: 'Joe', email: 'joe@gmail.com', admin: true)
+  user = User.new(id: 2, name: 'Joe')
   json = RubySerializer.as_json user
 
-  # { id: 1, admin: true, name: 'Joe', email: 'joe@gmail.com' }
+  # { id: 2, name: 'Joe' }
+
+  user = User.new(id: 3, name: 'Bob', admin: true)
+  json = RubySerializer.as_json user
+
+  # { id: 3, name: 'Bob', admin: true }
 
 ```
 
@@ -146,18 +151,67 @@ You can nest serialized attributes using a `:namespace`:
 
 ### Exposing associations
 
->> _TODO_
+If your models have ActiveRecord like associations you can declare them in your serializers and
+then use the optional `:include` mechanism to choose when to include them as nested resources
+during serialization:
+
+```ruby
+  class Publisher
+    attr :id, :name
+    has_many :books
+  end
+
+  class Book
+    attr :isbn, :name
+    belongs_to :publisher
+  end
+
+  class PublisherSerializer
+    expose :id
+    expose :name
+    has_many :books
+  end
+
+  class BookSerializer
+    expose :isbn
+    expose :name
+    belongs_to :publisher
+  end
+
+  publisher = Publisher.new(id: 42, name: 'Addison Wesley')
+
+  RubySerializer.as_json publisher                     # WITHOUT :include
+
+  # { id: 42, name: 'Addison Wesley' }
+
+  RubySerializer.as_json publisher, include: :books    # WITH :include
+
+  # { id: 42, name: 'Addison Wesley', books: [
+  #   { isbn: '020161622X', name: 'Pragmatic Programmer' },
+  #   { isbn: '0201633612', name: 'Design Patterns '},
+  #   ...
+  # ] }
+```
+
+`ruby-serializer` supports `belongs_to`, `has_one`, and `has_many` associations.
+
+You can include multiple associations using an array of includes:
+
+```ruby
+  RubySerializer.as_json publisher, include: [ :books, :address, :websites ]
+```
+
+You can also include nested associations:
+
+```ruby
+  RubySerializer.as_json publisher, include: { books: [ :authors ] }
+```
 
 ### Exposing model validation errors
 
 By default, if your underlying model responds to `:valid?` and returns `false` then the
 serialized response will automatically include a serialized `:errors` attribute.
 
-# Roadmap
-
-  * ActionController integration
-  * Extensibility with custom Field types
- 
 # License
 
 See [LICENSE](https://github.com/jakesgordon/ruby-serializer/blob/master/LICENSE) file.
