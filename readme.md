@@ -6,7 +6,7 @@ into JSON using a declarative DSL.
 ## Installation
 
 ```bash
-    $ gem install ruby-serializer
+    $ gem install ruby-serializer      # ... or add to your Gemfile as appropriate
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ Assuming you have a model similar to...
 
 ```ruby
   class Shape
-    attr :size, :color, :shape, # ...
+    attr :size, :color, :shape, ...
   end
 ```
 
@@ -32,13 +32,15 @@ You can declare a serializer as follows...
 And serialize using...
 
 ```ruby
-  shape = Shape.new(size: 'large', color: 'red', shape: 'square')    # construct/load as appropriate for your models
+  shape = Shape.new(size: 'large', color: 'red', shape: 'square')    # load as appropriate
   json  = RubySerializer.as_json shape
   
   # { size: 'large', color: 'red', shape: 'square' }
 ```
 
-Simple so far, but with RubySerializer you can also:
+## Beyond the basics
+
+Ok, that was very basic, but with RubySerializer you can also:
 
   * expose attributes `:as` another name
   * expose attributes with a custom `:value`
@@ -51,39 +53,35 @@ Simple so far, but with RubySerializer you can also:
   * serialize an array of models
   * add `ActionController` integration for easy API serialization
 
-## Exposing attributes with another name
+### Exposing attributes with another name
 
 >> _TODO_
 
-
-## Exposing attributes with custom values
-
->> _TODO_
-
-
-## Exposing attributes conditionally
+### Exposing attributes with custom values
 
 >> _TODO_
 
-
-## Exposing attributes within a namespace
-
->> _TODO_
-
-
-## Exposing model validation errors
+### Exposing attributes conditionally
 
 >> _TODO_
 
-## Exposing associations
+### Exposing attributes within a namespace
 
 >> _TODO_
 
-## Serializing arrays
+### Exposing model validation errors
 
 >> _TODO_
 
-## ActionController integration
+### Exposing associations
+
+>> _TODO_
+
+### Serializing arrays
+
+>> _TODO_
+
+### ActionController integration
 
 >> _TODO_
 
@@ -100,13 +98,11 @@ Simple so far, but with RubySerializer you can also:
 
   * Extensibility with custom Field types
  
-License
-=======
+# License
 
 See [LICENSE](https://github.com/jakesgordon/ruby-serializer/blob/master/LICENSE) file.
 
-Contact
-=======
+# Contact
 
 If you have any ideas, feedback, requests or bug reports, you can reach me at
 [jake@codeincomplete.com](mailto:jake@codeincomplete.com), or via
