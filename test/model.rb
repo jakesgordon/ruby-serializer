@@ -37,6 +37,18 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
+    def self.has_one(key)
+      instvar = "@#{key}"
+      define_method key do
+        instance_variable_get instvar
+      end
+      define_method "#{key}=" do |value|
+        instance_variable_set instvar, value
+      end
+    end
+
+    #----------------------------------------------------------------------------------------------
+
     def self.has_many(key)
       instvar = "@#{key}"
       define_method key do
