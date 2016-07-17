@@ -5,8 +5,8 @@ module RubySerializer
 
     def initialize(field, namespace, options)
       @field     = field.to_sym
-      @as        = options[:as]   || field
-      @from      = options[:from] || field
+      @as        = options[:as]   || @field
+      @from      = options[:from] || @field
       @value     = options[:value]
       @only      = options[:only]
       @unless    = options[:unless]

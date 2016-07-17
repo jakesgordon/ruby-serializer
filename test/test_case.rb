@@ -2,7 +2,10 @@ require_relative '../lib/ruby_serializer'
 
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'ostruct'
 require 'byebug'
+
+require_relative 'model'
 
 module RubySerializer
   class TestCase < Minitest::Test

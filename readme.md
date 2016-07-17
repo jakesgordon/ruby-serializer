@@ -87,11 +87,11 @@ Ok, that was very basic, but with RubySerializer you can also:
 
 # TODO
 
-  * :belongs_to
   * :has_one
   * :has_many
-  * :includes
   * ActionController integration
+  * nested :includes
+  * substitute :includes
   * documentation
 
 # Roadmap

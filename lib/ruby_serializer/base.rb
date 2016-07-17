@@ -3,8 +3,7 @@ module RubySerializer
 
     extend RubySerializer::Dsl
 
-    attr_reader :options, :include # only populated during #serialize and (temporarily) stores the #serialize options to make
-                                   # them available to any potential :value, :only and :unless lambdas in the derived serializer
+    attr_reader :options
 
     def initialize(resource)
       @resource = resource
@@ -23,6 +22,11 @@ module RubySerializer
     private
 
     attr_reader :resource
+    attr_reader :includes
+
+    def include?(association)
+      includes.include?(association)
+    end
 
     def serialize(options = {})
       if resource.respond_to? :to_ary
@@ -40,7 +44,8 @@ module RubySerializer
     end
 
     def serialize_object(options)
-      @options = options
+      @options  = options
+      @includes = Array(options[:include])
       json = {}
       json[:errors] = resource.errors if resource.respond_to?(:valid?) && !resource.valid?
       self.class.fields.each do |field|

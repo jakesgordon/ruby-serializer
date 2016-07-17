@@ -10,7 +10,14 @@ module RubySerializer
     EMAIL  = 'Email'
     SECRET = 'Secret'
 
-    Resource = OpenStruct
+    class Resource < Model
+      attr :id
+      attr :name
+      attr :email
+      attr :secret  # this attribute will not be exposed in any serializer
+      attr :value   # this attribute might be used as a custom :value in some serializers
+      attr :show    # this attribute might be used to conditionally show :only or :unless
+    end
 
     #==============================================================================================
     # Sample Serializers
@@ -45,9 +52,8 @@ module RubySerializer
     class CustomValueSerializer < RubySerializer::Base
       expose :id
       expose :static,  value: 'static value'
-      expose :method,  value: :method_value
       expose :dynamic, value: -> { "dynamic value (#{resource.name})" }
-      expose :empty,   value: nil
+      expose :method,  value: :value
     end
 
     #----------------------------------------------------------------------------------------------
@@ -125,15 +131,14 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_expose_attributes_with_custom_values
-      resource = Resource.new(id: ID, name: NAME, method_value: 'method value')
+      resource = Resource.new(id: ID, name: NAME, value: 'method value')
       json     = RubySerializer.as_json resource, with: CustomValueSerializer
-      expected = [ :id, :static, :dynamic, :method, :empty ]
+      expected = [ :id, :static, :dynamic, :method ]
       assert_set   expected,               json.keys
       assert_equal ID,                     json[:id]
       assert_equal 'static value',         json[:static]
       assert_equal 'dynamic value (Name)', json[:dynamic]
       assert_equal 'method value',         json[:method]
-      assert_equal nil,                    json[:empty]
     end
 
     #----------------------------------------------------------------------------------------------
