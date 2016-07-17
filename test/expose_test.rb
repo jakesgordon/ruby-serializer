@@ -74,6 +74,15 @@ module RubySerializer
       expose :show_unless, value: 'show unless', unless: -> { user.show }
     end
 
+    #----------------------------------------------------------------------------------------------
+
+    class CustomOptionsSerializer < RubySerializer::Base
+      expose :id
+      expose :value,       value: -> { "value is #{options[:value]}" }
+      expose :show_only,   value: 'show only',   only: ->   { options[:show] }
+      expose :show_unless, value: 'show unless', unless: -> { options[:show] }
+    end
+
     #==============================================================================================
     # TESTS
     #==============================================================================================
@@ -141,13 +150,45 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_expose_attributes_using_custom_resource_name
-      resource = Resource.new(id: ID, value: SECRET)
+
+      resource = Resource.new(id: ID, value: 42, show: false)
       json     = RubySerializer.serialize resource, with: CustomResourceNameSerializer
       expected = [ :id, :value, :show_unless ]
-      assert_set   expected,             json.keys
-      assert_equal ID,                   json[:id]
-      assert_equal "value is #{SECRET}", json[:value]
-      assert_equal "show unless",        json[:show_unless]
+      assert_set   expected,      json.keys
+      assert_equal ID,            json[:id]
+      assert_equal "value is 42", json[:value]
+      assert_equal "show unless", json[:show_unless]
+
+      resource = Resource.new(id: ID, value: 99, show: true)
+      json     = RubySerializer.serialize resource, with: CustomResourceNameSerializer
+      expected = [ :id, :value, :show_only ]
+      assert_set   expected,      json.keys
+      assert_equal ID,            json[:id]
+      assert_equal "value is 99", json[:value]
+      assert_equal "show only",   json[:show_only]
+
+    end
+
+    #----------------------------------------------------------------------------------------------
+
+    def test_expose_attributes_using_arbitrary_options_passed_into_serializer
+
+      resource = Resource.new(id: ID)
+
+      json     = RubySerializer.serialize resource, value: 42, show: false, with: CustomOptionsSerializer
+      expected = [ :id, :value, :show_unless ]
+      assert_set   expected,      json.keys
+      assert_equal ID,            json[:id]
+      assert_equal "value is 42", json[:value]
+      assert_equal "show unless", json[:show_unless]
+
+      json     = RubySerializer.serialize resource, value: 99, show: true, with: CustomOptionsSerializer
+      expected = [ :id, :value, :show_only ]
+      assert_set   expected,      json.keys
+      assert_equal ID,            json[:id]
+      assert_equal "value is 99", json[:value]
+      assert_equal "show only",   json[:show_only]
+
     end
 
     #----------------------------------------------------------------------------------------------
