@@ -95,7 +95,7 @@ module RubySerializer
 
     def test_expose_attributes_unchanged
       resource = Resource.new(id: ID, name: NAME, email: EMAIL, secret: SECRET)
-      json     = RubySerializer.as_json resource, with: BasicSerializer
+      json     = serialize resource, with: BasicSerializer
       expected = [ :id, :name, :email ]
       assert_set   expected, json.keys
       assert_equal ID,       json[:id]
@@ -107,7 +107,7 @@ module RubySerializer
 
     def test_expose_renamed_attributes
       resource = Resource.new(id: ID, name: NAME, email: EMAIL, secret: SECRET)
-      json     = RubySerializer.as_json resource, with: RenamingSerializer
+      json     = serialize resource, with: RenamingSerializer
       expected = [ :id, :user_name, :user_email ]
       assert_set   expected, json.keys
       assert_equal ID,       json[:id]
@@ -119,7 +119,7 @@ module RubySerializer
 
     def test_expose_namespaced_attributes
       resource = Resource.new(id: ID, name: NAME, email: EMAIL, secret: SECRET)
-      json     = RubySerializer.as_json resource, with: NamespaceSerializer
+      json     = serialize resource, with: NamespaceSerializer
       expected = [ :id, :user ]
       assert_set   expected,          json.keys
       assert_equal ID,                json[:id]
@@ -132,7 +132,7 @@ module RubySerializer
 
     def test_expose_attributes_with_custom_values
       resource = Resource.new(id: ID, name: NAME, value: 'method value')
-      json     = RubySerializer.as_json resource, with: CustomValueSerializer
+      json     = serialize resource, with: CustomValueSerializer
       expected = [ :id, :static, :dynamic, :method ]
       assert_set   expected,               json.keys
       assert_equal ID,                     json[:id]
@@ -144,9 +144,9 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_expose_attributes_conditionally
-      show        = RubySerializer.as_json Resource.new(id: ID, show: true),  with: ConditionalSerializer
-      noshow      = RubySerializer.as_json Resource.new(id: ID, show: false), with: ConditionalSerializer
-      unspecified = RubySerializer.as_json Resource.new(id: ID),              with: ConditionalSerializer
+      show        = serialize Resource.new(id: ID, show: true),  with: ConditionalSerializer
+      noshow      = serialize Resource.new(id: ID, show: false), with: ConditionalSerializer
+      unspecified = serialize Resource.new(id: ID),              with: ConditionalSerializer
       assert_set [ :id, :only_true, :unless_false, :only_method,   :only_dynamic   ], show.keys
       assert_set [ :id, :only_true, :unless_false, :unless_method, :unless_dynamic ], noshow.keys
       assert_set [ :id, :only_true, :unless_false, :unless_method, :unless_dynamic ], unspecified.keys
@@ -157,7 +157,7 @@ module RubySerializer
     def test_expose_attributes_using_custom_resource_name
 
       resource = Resource.new(id: ID, value: 42, show: false)
-      json     = RubySerializer.as_json resource, with: CustomResourceNameSerializer
+      json     = serialize resource, with: CustomResourceNameSerializer
       expected = [ :id, :value, :show_unless ]
       assert_set   expected,      json.keys
       assert_equal ID,            json[:id]
@@ -165,7 +165,7 @@ module RubySerializer
       assert_equal "show unless", json[:show_unless]
 
       resource = Resource.new(id: ID, value: 99, show: true)
-      json     = RubySerializer.as_json resource, with: CustomResourceNameSerializer
+      json     = serialize resource, with: CustomResourceNameSerializer
       expected = [ :id, :value, :show_only ]
       assert_set   expected,      json.keys
       assert_equal ID,            json[:id]
@@ -180,14 +180,14 @@ module RubySerializer
 
       resource = Resource.new(id: ID)
 
-      json     = RubySerializer.as_json resource, value: 42, show: false, with: CustomOptionsSerializer
+      json     = serialize resource, value: 42, show: false, with: CustomOptionsSerializer
       expected = [ :id, :value, :show_unless ]
       assert_set   expected,      json.keys
       assert_equal ID,            json[:id]
       assert_equal "value is 42", json[:value]
       assert_equal "show unless", json[:show_unless]
 
-      json     = RubySerializer.as_json resource, value: 99, show: true, with: CustomOptionsSerializer
+      json     = serialize resource, value: 99, show: true, with: CustomOptionsSerializer
       expected = [ :id, :value, :show_only ]
       assert_set   expected,      json.keys
       assert_equal ID,            json[:id]

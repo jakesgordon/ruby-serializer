@@ -5,8 +5,8 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
-    ADDISON_WESLEY       = { id: 123, name: 'Addison-Wesley' }
-    PRAGMATIC_PROGRAMMER = { isbn: '020161622X', name: 'Pragmatic Programmer' }
+    AW = { id: 123, name: 'Addison-Wesley' }
+    PP = { isbn: '020161622X', name: 'Pragmatic Programmer' }
 
     #----------------------------------------------------------------------------------------------
 
@@ -18,6 +18,8 @@ module RubySerializer
       attr :isbn, :name
       belongs_to :publisher
     end
+
+    #----------------------------------------------------------------------------------------------
 
     class PublisherSerializer < RubySerializer::Base
       expose :id
@@ -33,31 +35,31 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_belongs_to
-      publisher      = Publisher.new(ADDISON_WESLEY)
-      book           = Book.new(PRAGMATIC_PROGRAMMER)
+      publisher      = Publisher.new(AW)
+      book           = Book.new(PP)
       book.publisher = publisher
-      json = RubySerializer.as_json book, with: BookSerializer, include: :publisher
-      expected = [ :isbn, :name, :publisher_id, :publisher ]
-      assert_set expected, json.keys
-      assert_equal PRAGMATIC_PROGRAMMER[:isbn], json[:isbn]
-      assert_equal PRAGMATIC_PROGRAMMER[:name], json[:name]
-      assert_equal ADDISON_WESLEY[:id],         json[:publisher_id]
-      assert_equal [ :id, :name ],              json[:publisher].keys
-      assert_equal ADDISON_WESLEY[:id],         json[:publisher][:id]
-      assert_equal ADDISON_WESLEY[:name],       json[:publisher][:name]
+      json           = serialize book, include: :publisher
+      expected       = [ :isbn, :name, :publisher_id, :publisher ]
+      assert_set   expected,        json.keys
+      assert_equal PP[:isbn],       json[:isbn]
+      assert_equal PP[:name],       json[:name]
+      assert_equal AW[:id],         json[:publisher_id]
+      assert_equal [ :id, :name ],  json[:publisher].keys
+      assert_equal AW[:id],         json[:publisher][:id]
+      assert_equal AW[:name],       json[:publisher][:name]
     end
 
     def test_belongs_to_but_not_included
-      publisher      = Publisher.new(ADDISON_WESLEY)
-      book           = Book.new(PRAGMATIC_PROGRAMMER)
+      publisher      = Publisher.new(AW)
+      book           = Book.new(PP)
       book.publisher = publisher
-      json = RubySerializer.as_json book, with: BookSerializer
-      expected = [ :isbn, :name, :publisher_id ]
-      assert_set expected, json.keys
-      assert_equal PRAGMATIC_PROGRAMMER[:isbn], json[:isbn]
-      assert_equal PRAGMATIC_PROGRAMMER[:name], json[:name]
-      assert_equal ADDISON_WESLEY[:id],         json[:publisher_id]
-      assert_equal nil,                         json[:publisher]
+      json           = serialize book
+      expected       = [ :isbn, :name, :publisher_id ]
+      assert_set   expected,  json.keys
+      assert_equal PP[:isbn], json[:isbn]
+      assert_equal PP[:name], json[:name]
+      assert_equal AW[:id],   json[:publisher_id]
+      assert_equal nil,       json[:publisher]
     end
 
     #----------------------------------------------------------------------------------------------

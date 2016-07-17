@@ -12,6 +12,12 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
+    def serialize(resource, options = {})
+      RubySerializer.as_json resource, options
+    end
+
+    #----------------------------------------------------------------------------------------------
+
     def assert_set(expected, actual, message = nil)
       assert_equal Set.new(expected), Set.new(actual), message
     end
