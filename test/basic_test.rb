@@ -6,7 +6,7 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_gem_information
-      assert_equal '0.0.1',                         VERSION
+      assert_equal '1.0.0',                         VERSION
       assert_equal 'Serialize POROs to JSON',       SUMMARY
       assert_match 'A general purpose library for', DESCRIPTION
     end
