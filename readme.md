@@ -31,11 +31,11 @@ You can declare a serializer as follows...
 
 And serialize using...
 
-```
+```ruby
   shape = Shape.new(size: 'large', color: 'red', shape: 'square')    # construct/load as appropriate for your models
   json  = RubySerializer.as_json shape
   
-  # result:  { size: 'large', color: 'red', shape: 'square' }
+  # { size: 'large', color: 'red', shape: 'square' }
 ```
 
 Simple so far, but with RubySerializer you can also:

@@ -30,12 +30,12 @@ module RubySerializer
 
     def test_basic_serialization
 
-      json = RubySerializer.serialize Shape.new(:red, :square)
+      json = RubySerializer.as_json Shape.new(:red, :square)
       assert_set   [ :color, :shape ], json.keys
       assert_equal :red,               json[:color]
       assert_equal :square,            json[:shape]
 
-      json = RubySerializer.serialize Car.new(:honda, :civic)
+      json = RubySerializer.as_json Car.new(:honda, :civic)
       assert_set   [ :make, :model ], json.keys
       assert_equal :honda,            json[:make]
       assert_equal :civic,            json[:model]
@@ -51,7 +51,7 @@ module RubySerializer
         Car.new(:honda, :civic),
         Car.new(:jeep, :wrangler)
       ]
-      json = RubySerializer.serialize resources
+      json = RubySerializer.as_json resources
       assert_equal resources.length, json.length
       assert_set   [ :color, :shape ], json[0].keys
       assert_equal :red,               json[0][:color]
@@ -70,7 +70,7 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_serialize_with_root
-      json = RubySerializer.serialize Car.new(:honda, :civic), root: :car
+      json = RubySerializer.as_json Car.new(:honda, :civic), root: :car
       assert_set [ :car ], json.keys
       assert_equal :honda, json[:car][:make]
       assert_equal :civic, json[:car][:model]
@@ -80,7 +80,7 @@ module RubySerializer
 
     def test_serialize_with_errors
       resource = OpenStruct.new(color: :red, shape: :sausages, valid?: false, errors: { shape: 'is invalid' })
-      json     = RubySerializer.serialize resource, with: ShapeSerializer
+      json     = RubySerializer.as_json resource, with: ShapeSerializer
       expected = [ :color, :shape, :errors ]
       assert_set expected,       json.keys
       assert_equal :red,         json[:color]

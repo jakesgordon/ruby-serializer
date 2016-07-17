@@ -10,12 +10,8 @@ module RubySerializer
       @resource = resource
     end
 
-    def serialize(options = {})
-      json = if resource.respond_to? :to_ary
-               serialize_array(options)
-             else
-               serialize_object(options)
-             end
+    def as_json(options = {})
+      json = serialize(options)
       json = { options[:root] => json } if options[:root]
       json
     end
@@ -28,10 +24,18 @@ module RubySerializer
 
     attr_reader :resource
 
+    def serialize(options = {})
+      if resource.respond_to? :to_ary
+        serialize_array(options)
+      else
+        serialize_object(options)
+      end
+    end
+
     def serialize_array(options)
       resource.map do |item|
         serializer = RubySerializer.build(item)
-        serializer.serialize options.merge(root: nil)
+        serializer.send :serialize, options.merge(root: nil)
       end
     end
 

@@ -22,12 +22,12 @@ module RubySerializer
 
   #------------------------------------------------------------------------------------------------
 
-  def self.serialize(resource, options = {})
+  def self.as_json(resource, options = {})
     build_options = {
       with:       options.delete(:with),
       serializer: options.delete(:serializer)
     }
-    build(resource, build_options).serialize(options)
+    build(resource, build_options).as_json(options)
   end
 
   #------------------------------------------------------------------------------------------------
