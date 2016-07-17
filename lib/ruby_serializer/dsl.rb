@@ -18,6 +18,10 @@ module RubySerializer
       fields << Association.new(field, namespace, options)
     end
 
+    def has_many(field, options = {})
+      fields << Association.new(field, namespace, options)
+    end
+
     def namespace(ns = nil, &block)
       @namespace ||= []
       return @namespace if ns.nil?  # this method acts as both getter (this line) and setter (subsequent)

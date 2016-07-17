@@ -88,7 +88,6 @@ Ok, that was very basic, but with RubySerializer you can also:
 # TODO
 
   * :has_one
-  * :has_many
   * ActionController integration
   * nested :includes
   * substitute :includes

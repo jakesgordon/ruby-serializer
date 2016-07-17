@@ -6,12 +6,16 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     AW = { id: 123, name: 'Addison-Wesley' }
-    PP = { isbn: '020161622X', name: 'Pragmatic Programmer' }
+    MS = { id: 99,  name: 'Microsoft Press' }
+    PP = { isbn: '020161622X', name: 'Pragmatic Programmer', publisher_id: AW[:id] }
+    DP = { isbn: '0201633612', name: 'Design Patterns',      publisher_id: AW[:id] }
+    CC = { isbn: '0735619670', name: 'Code Complete',        publisher_id: MS[:id] }
 
     #----------------------------------------------------------------------------------------------
 
     class Publisher < Model
       attr :id, :name
+      has_many :books
     end
 
     class Book < Model
@@ -22,13 +26,14 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     class PublisherSerializer < RubySerializer::Base
-      expose :id
-      expose :name
+      expose   :id
+      expose   :name
+      has_many :books
     end
 
     class BookSerializer < RubySerializer::Base
-      expose :isbn
-      expose :name
+      expose     :isbn
+      expose     :name
       belongs_to :publisher
     end
 
@@ -60,6 +65,40 @@ module RubySerializer
       assert_equal PP[:name], json[:name]
       assert_equal AW[:id],   json[:publisher_id]
       assert_equal nil,       json[:publisher]
+    end
+
+    #----------------------------------------------------------------------------------------------
+
+    def test_has_many
+      publisher = Publisher.new(AW)
+      publisher.books << Book.new(PP)
+      publisher.books << Book.new(DP)
+      json     = serialize publisher, include: :books
+      expected = [ :id, :name, :books ]
+      assert_set   expected,                        json.keys
+      assert_equal AW[:id],                         json[:id]
+      assert_equal AW[:name],                       json[:name]
+      assert_equal 2,                               json[:books].length
+      assert_equal [ :isbn, :name, :publisher_id ], json[:books][0].keys
+      assert_equal PP[:isbn],                       json[:books][0][:isbn]
+      assert_equal PP[:name],                       json[:books][0][:name]
+      assert_equal AW[:id],                         json[:books][0][:publisher_id]
+      assert_equal [ :isbn, :name, :publisher_id ], json[:books][1].keys
+      assert_equal DP[:isbn],                       json[:books][1][:isbn]
+      assert_equal DP[:name],                       json[:books][1][:name]
+      assert_equal AW[:id],                         json[:books][1][:publisher_id]
+    end
+
+    def test_has_many_but_not_included
+      publisher = Publisher.new(AW)
+      publisher.books << Book.new(PP)
+      publisher.books << Book.new(DP)
+      json     = serialize publisher
+      expected = [ :id, :name ]
+      assert_set   expected,         json.keys
+      assert_equal AW[:id],          json[:id]
+      assert_equal AW[:name],        json[:name]
+      assert_equal nil,              json[:books]
     end
 
     #----------------------------------------------------------------------------------------------

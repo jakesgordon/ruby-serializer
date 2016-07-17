@@ -17,6 +17,8 @@ module RubySerializer
       @errors
     end
 
+    #----------------------------------------------------------------------------------------------
+
     def self.belongs_to(key)
       idkey     = "#{key}_id"
       instvar   = "@#{key}"
@@ -32,6 +34,21 @@ module RubySerializer
         instance_variable_set idinstvar, value ? value.id : nil
       end
     end
+
+    #----------------------------------------------------------------------------------------------
+
+    def self.has_many(key)
+      instvar = "@#{key}"
+      define_method key do
+        instance_variable_set instvar, [] unless instance_variable_defined?(instvar)
+        instance_variable_get instvar
+      end
+      define_method "#{key}=" do |value|
+        instance_variable_set instvar, Array(value)
+      end
+    end
+
+    #----------------------------------------------------------------------------------------------
 
   end
 end
