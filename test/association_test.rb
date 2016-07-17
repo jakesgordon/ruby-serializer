@@ -190,25 +190,33 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def test_multiple_includes
-      publisher = publishers(AW)
-      json      = serialize publisher, include: [ :books, :address ]
-      expected  = [ :id, :name, :address, :books ]
-      assert_set expected, json.keys
-      assert_equal AW[:id],                         json[:id]
-      assert_equal AW[:name],                       json[:name]
-      assert_equal [ :id, :city, :state ],          json[:address].keys
-      assert_equal AW[:address][:id],               json[:address][:id]
-      assert_equal AW[:address][:city],             json[:address][:city]
-      assert_equal AW[:address][:state],            json[:address][:state]
-      assert_equal 2,                               json[:books].length
-      assert_equal [ :isbn, :name, :publisher_id ], json[:books][0].keys
-      assert_equal PP[:isbn],                       json[:books][0][:isbn]
-      assert_equal PP[:name],                       json[:books][0][:name]
-      assert_equal AW[:id],                         json[:books][0][:publisher_id]
-      assert_equal [ :isbn, :name, :publisher_id ], json[:books][1].keys
-      assert_equal DP[:isbn],                       json[:books][1][:isbn]
-      assert_equal DP[:name],                       json[:books][1][:name]
-      assert_equal AW[:id],                         json[:books][1][:publisher_id]
+      variations = [
+        [ :books, :address   ],   # verify using array of symbols
+        [ 'books', 'address' ],   # verify using array of strings
+          "books,address",        # verify using a comma separated string
+          "  books , address "    # verify using a comma separated string (with whitespace)
+      ]
+      variations.each do |includes|
+        publisher = publishers(AW)
+        json      = serialize publisher, include: includes
+        expected  = [ :id, :name, :address, :books ]
+        assert_set expected, json.keys
+        assert_equal AW[:id],                         json[:id]
+        assert_equal AW[:name],                       json[:name]
+        assert_equal [ :id, :city, :state ],          json[:address].keys
+        assert_equal AW[:address][:id],               json[:address][:id]
+        assert_equal AW[:address][:city],             json[:address][:city]
+        assert_equal AW[:address][:state],            json[:address][:state]
+        assert_equal 2,                               json[:books].length
+        assert_equal [ :isbn, :name, :publisher_id ], json[:books][0].keys
+        assert_equal PP[:isbn],                       json[:books][0][:isbn]
+        assert_equal PP[:name],                       json[:books][0][:name]
+        assert_equal AW[:id],                         json[:books][0][:publisher_id]
+        assert_equal [ :isbn, :name, :publisher_id ], json[:books][1].keys
+        assert_equal DP[:isbn],                       json[:books][1][:isbn]
+        assert_equal DP[:name],                       json[:books][1][:name]
+        assert_equal AW[:id],                         json[:books][1][:publisher_id]
+      end
     end
 
     #----------------------------------------------------------------------------------------------
