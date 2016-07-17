@@ -25,7 +25,7 @@ module RubySerializer
     attr_reader :includes
 
     def include?(association)
-      includes.include?(association.to_sym)
+      includes.key?(association.to_sym)
     end
 
     def serialize(options = {})
@@ -64,19 +64,24 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def expand_includes(includes, options = {})
-      sanitize_includes(includes)
-    end
 
-    def sanitize_includes(includes)
+      return includes if includes.is_a?(Hash) # already expanded
+
       includes = case includes
-                 when nil then []
-                 when Array then includes
+                 when nil    then []
+                 when Array  then includes
                  when Symbol then [ includes ]
                  when String then includes.split(',')
                  else
                    raise ArgumentError, "unexpected includes #{includes.class}"
                  end
-      includes.map { |i| i.to_s.downcase.strip.to_sym }
+
+      includes.each_with_object({}) do |i, hash|
+        i.to_s.downcase.strip.split('.').reduce(hash) do |h, part|
+          h[part.to_sym] ||= {}
+        end
+      end
+
     end
 
     #----------------------------------------------------------------------------------------------

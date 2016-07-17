@@ -32,32 +32,6 @@ module RubySerializer
 
     #----------------------------------------------------------------------------------------------
 
-    def addresses(fixture)
-      Address.new(fixture)
-    end
-
-    def authors(fixture)
-      author = Author.new(fixture)
-      author.address = addresses(fixture[:address]) if fixture.key?(:address)
-      author
-    end
-
-    def books(fixture, options = {})
-      book = Book.new(fixture)
-      book.publisher = publishers(options[:publisher]) if options.key?(:publisher)
-      book.authors   = Array(fixture[:authors]).map { |a| authors(a) } if fixture.key?(:authors)
-      book
-    end
-
-    def publishers(fixture)
-      publisher = Publisher.new(fixture)
-      publisher.address = addresses(fixture[:address]) if fixture.key?(:address)
-      publisher.books = Array(fixture[:books]).map { |b| books(b) } if fixture.key?(:books)
-      publisher
-    end
-
-    #----------------------------------------------------------------------------------------------
-
     class Publisher < Model
       attr :id, :name
       has_one  :address
@@ -92,6 +66,7 @@ module RubySerializer
       expose     :isbn
       expose     :name
       belongs_to :publisher
+      has_many   :authors
     end
 
     class AuthorSerializer < RubySerializer::Base
@@ -112,24 +87,24 @@ module RubySerializer
       book     = books(PP, publisher: AW)
       json     = serialize book, include: :publisher
       expected = [ :isbn, :name, :publisher_id, :publisher ]
-      assert_set   expected,       json.keys
-      assert_equal PP[:isbn],      json[:isbn]
-      assert_equal PP[:name],      json[:name]
-      assert_equal AW[:id],        json[:publisher_id]
-      assert_equal [ :id, :name ], json[:publisher].keys
-      assert_equal AW[:id],        json[:publisher][:id]
-      assert_equal AW[:name],      json[:publisher][:name]
+      assert_set   expected,          json.keys
+      assert_equal PP[:isbn],         json[:isbn]
+      assert_equal PP[:name],         json[:name]
+      assert_equal PP[:publisher_id], json[:publisher_id]
+      assert_equal [ :id, :name ],    json[:publisher].keys
+      assert_equal AW[:id],           json[:publisher][:id]
+      assert_equal AW[:name],         json[:publisher][:name]
     end
 
     def test_belongs_to_but_not_included
       book     = books(PP, publisher: AW)
       json     = serialize book
       expected = [ :isbn, :name, :publisher_id ]
-      assert_set   expected,  json.keys
-      assert_equal PP[:isbn], json[:isbn]
-      assert_equal PP[:name], json[:name]
-      assert_equal AW[:id],   json[:publisher_id]
-      assert_equal nil,       json[:publisher]
+      assert_set   expected,          json.keys
+      assert_equal PP[:isbn],         json[:isbn]
+      assert_equal PP[:name],         json[:name]
+      assert_equal PP[:publisher_id], json[:publisher_id]
+      assert_equal nil,               json[:publisher]
     end
 
     #----------------------------------------------------------------------------------------------
@@ -170,11 +145,11 @@ module RubySerializer
       assert_equal [ :isbn, :name, :publisher_id ], json[:books][0].keys
       assert_equal PP[:isbn],                       json[:books][0][:isbn]
       assert_equal PP[:name],                       json[:books][0][:name]
-      assert_equal AW[:id],                         json[:books][0][:publisher_id]
+      assert_equal PP[:publisher_id],               json[:books][0][:publisher_id]
       assert_equal [ :isbn, :name, :publisher_id ], json[:books][1].keys
       assert_equal DP[:isbn],                       json[:books][1][:isbn]
       assert_equal DP[:name],                       json[:books][1][:name]
-      assert_equal AW[:id],                         json[:books][1][:publisher_id]
+      assert_equal DP[:publisher_id],               json[:books][1][:publisher_id]
     end
 
     def test_has_many_but_not_included
@@ -211,17 +186,108 @@ module RubySerializer
         assert_equal [ :isbn, :name, :publisher_id ], json[:books][0].keys
         assert_equal PP[:isbn],                       json[:books][0][:isbn]
         assert_equal PP[:name],                       json[:books][0][:name]
-        assert_equal AW[:id],                         json[:books][0][:publisher_id]
+        assert_equal PP[:publisher_id],               json[:books][0][:publisher_id]
         assert_equal [ :isbn, :name, :publisher_id ], json[:books][1].keys
         assert_equal DP[:isbn],                       json[:books][1][:isbn]
         assert_equal DP[:name],                       json[:books][1][:name]
-        assert_equal AW[:id],                         json[:books][1][:publisher_id]
+        assert_equal DP[:publisher_id],               json[:books][1][:publisher_id]
       end
     end
 
     #----------------------------------------------------------------------------------------------
 
+    def test_nested_includes
+      publisher = publishers(AW)
+      json      = serialize publisher, include: "books.authors.address"
+      expected  = [ :id, :name, :books ]
+      assert_set expected,                                    json.keys
+      assert_equal AW[:id],                                   json[:id]
+      assert_equal AW[:name],                                 json[:name]
+      assert_equal 2,                                         json[:books].length
+      assert_equal [ :isbn, :name, :publisher_id, :authors ], json[:books][0].keys
+      assert_equal PP[:isbn],                                 json[:books][0][:isbn]
+      assert_equal PP[:name],                                 json[:books][0][:name]
+      assert_equal PP[:publisher_id],                         json[:books][0][:publisher_id]
+      assert_equal 2,                                         json[:books][0][:authors].length
+      assert_equal [ :id, :name, :address ],                  json[:books][0][:authors][0].keys
+      assert_equal HUNT[:id],                                 json[:books][0][:authors][0][:id]
+      assert_equal HUNT[:name],                               json[:books][0][:authors][0][:name]
+      assert_equal [ :id, :city, :state ],                    json[:books][0][:authors][0][:address].keys
+      assert_equal PORTLAND[:id],                             json[:books][0][:authors][0][:address][:id]
+      assert_equal PORTLAND[:city],                           json[:books][0][:authors][0][:address][:city]
+      assert_equal PORTLAND[:state],                          json[:books][0][:authors][0][:address][:state]
+      assert_equal [ :id, :name, :address ],                  json[:books][0][:authors][1].keys
+      assert_equal THOMAS[:id],                               json[:books][0][:authors][1][:id]
+      assert_equal THOMAS[:name],                             json[:books][0][:authors][1][:name]
+      assert_equal [ :id, :city, :state ],                    json[:books][0][:authors][1][:address].keys
+      assert_equal BOSTON[:id],                               json[:books][0][:authors][1][:address][:id]
+      assert_equal BOSTON[:city],                             json[:books][0][:authors][1][:address][:city]
+      assert_equal BOSTON[:state],                            json[:books][0][:authors][1][:address][:state]
+      assert_equal [ :isbn, :name, :publisher_id, :authors ], json[:books][1].keys
+      assert_equal DP[:isbn],                                 json[:books][1][:isbn]
+      assert_equal DP[:name],                                 json[:books][1][:name]
+      assert_equal DP[:publisher_id],                         json[:books][1][:publisher_id]
+      assert_equal 4,                                         json[:books][1][:authors].length
+      assert_equal [ :id, :name, :address ],                  json[:books][1][:authors][0].keys
+      assert_equal GAMMA[:id],                                json[:books][1][:authors][0][:id]
+      assert_equal GAMMA[:name],                              json[:books][1][:authors][0][:name]
+      assert_equal [ :id, :city, :state ],                    json[:books][1][:authors][0][:address].keys
+      assert_equal NYC[:id],                                  json[:books][1][:authors][0][:address][:id]
+      assert_equal NYC[:city],                                json[:books][1][:authors][0][:address][:city]
+      assert_equal NYC[:state],                               json[:books][1][:authors][0][:address][:state]
+      assert_equal [ :id, :name, :address ],                  json[:books][1][:authors][1].keys
+      assert_equal HELM[:id],                                 json[:books][1][:authors][1][:id]
+      assert_equal HELM[:name],                               json[:books][1][:authors][1][:name]
+      assert_equal [ :id, :city, :state ],                    json[:books][1][:authors][1][:address].keys
+      assert_equal SF[:id],                                   json[:books][1][:authors][1][:address][:id]
+      assert_equal SF[:city],                                 json[:books][1][:authors][1][:address][:city]
+      assert_equal SF[:state],                                json[:books][1][:authors][1][:address][:state]
+      assert_equal [ :id, :name, :address ],                  json[:books][1][:authors][2].keys
+      assert_equal JOHNSON[:id],                              json[:books][1][:authors][2][:id]
+      assert_equal JOHNSON[:name],                            json[:books][1][:authors][2][:name]
+      assert_equal [ :id, :city, :state ],                    json[:books][1][:authors][2][:address].keys
+      assert_equal CHICAGO[:id],                              json[:books][1][:authors][2][:address][:id]
+      assert_equal CHICAGO[:city],                            json[:books][1][:authors][2][:address][:city]
+      assert_equal CHICAGO[:state],                           json[:books][1][:authors][2][:address][:state]
+      assert_equal [ :id, :name, :address ],                  json[:books][1][:authors][3].keys
+      assert_equal VLISSIDES[:id],                            json[:books][1][:authors][3][:id]
+      assert_equal VLISSIDES[:name],                          json[:books][1][:authors][3][:name]
+      assert_equal [ :id, :city, :state ],                    json[:books][1][:authors][3][:address].keys
+      assert_equal DALLAS[:id],                               json[:books][1][:authors][3][:address][:id]
+      assert_equal DALLAS[:city],                             json[:books][1][:authors][3][:address][:city]
+      assert_equal DALLAS[:state],                            json[:books][1][:authors][3][:address][:state]
+
+    end
+
+    #----------------------------------------------------------------------------------------------
+
     private
+
+    def addresses(fixture)
+      Address.new(fixture)
+    end
+
+    def authors(fixture)
+      author = Author.new(fixture)
+      author.address = addresses(fixture[:address]) if fixture.key?(:address)
+      author
+    end
+
+    def books(fixture, options = {})
+      book = Book.new(fixture)
+      book.publisher = publishers(options[:publisher]) if options.key?(:publisher)
+      book.authors   = Array(fixture[:authors]).map { |a| authors(a) } if fixture.key?(:authors)
+      book
+    end
+
+    def publishers(fixture)
+      publisher = Publisher.new(fixture)
+      publisher.address = addresses(fixture[:address]) if fixture.key?(:address)
+      publisher.books = Array(fixture[:books]).map { |b| books(b) } if fixture.key?(:books)
+      publisher
+    end
+
+    #----------------------------------------------------------------------------------------------
 
   end
 end

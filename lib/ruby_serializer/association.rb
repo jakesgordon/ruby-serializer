@@ -4,9 +4,10 @@ module RubySerializer
     #----------------------------------------------------------------------------------------------
 
     def serialize(resource, serializer)
+      includes = serializer.send(:includes)[field]
       association = resource.send(field)
       if association
-        RubySerializer.as_json(association)
+        RubySerializer.as_json(association, include: includes)
       end
     end
 

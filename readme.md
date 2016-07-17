@@ -87,9 +87,8 @@ Ok, that was very basic, but with RubySerializer you can also:
 
 # TODO
 
+  * test multiple nested includes
   * ActionController integration
-  * nested :includes
-  * substitute :includes
   * documentation
 
 # Roadmap
