@@ -76,6 +76,11 @@ You can expose an attribute with a different name using `:as`
     expose :name,  as: :user_name
     expose :email, as: :user_email
   end
+
+  user = User.new(id: 42, name: 'Jake', email: 'jake@codeincomplete.com')
+  json = RubySerializer.as_json user
+
+  # { id: 42, user_name: 'Jake', user_email: 'jake@codeincomplete.com' }
 ```
 
 ### Exposing attributes with custom values
@@ -85,10 +90,15 @@ You can expose an attribute with a different value using `:value`
 ```ruby
   class UserSerializer < RubySerializer::Base
     expose :id
-    expose :static,   value: 'static'              # expose a static attribute
-    expose :dynamic,  value: -> { resource.name }  # expose a dynamic attribute using a lambda
-    expose :resource, value: :name                 # expose a dynamic attribute using a symbol (calls a method on the underlying resource automatically)
+    expose :static,  value: 'static'                      # expose a static attribute
+    expose :dynamic, value: -> { resource.name.reverse }  # expose a dynamic attribute using a lambda
+    expose :method,  value: :name                         # expose a dynamic attribute using a symbol (calls a method on the underlying resource automatically)
   end
+
+  user = User.new(id: 42, name: 'Jake')
+  json = RubySerializer.as_json user
+
+  # { id: 42, static: 'static', dynamic: 'ekaJ', method: 'Jake' }
 ```
 
 ### Exposing attributes conditionally
@@ -98,10 +108,21 @@ You can expose attributes conditionally using `:only` and `:unless`
 ```ruby
   class UserSerializer < RubySerializer::Base
     expose :id
-    expose :name,   only:   -> { resource.name.present? }
-    expose :email,  unless: -> { resource.email.blank?  }
-    expose :errors, unless: :valid?
+    expose :admin,  only: :admin?                             # expose this field only when resource.admin?
+    expose :name,   only:   -> { resource.name.present? }     # expose this field only when resource.name.present?
+    expose :email,  unless: -> { resource.email.blank?  }     # expose this field unless resource.email.blank?
   end
+
+  user = User.new(id: 1)
+  json = RubySerializer.as_json user
+
+  # { id: 2 } 
+
+  user = User.new(id: 2, name: 'Joe', email: 'joe@gmail.com', admin: true)
+  json = RubySerializer.as_json user
+
+  # { id: 1, admin: true, name: 'Joe', email: 'joe@gmail.com' }
+
 ```
 
 ### Exposing attributes within a namespace
@@ -116,6 +137,11 @@ You can nest serialized attributes using a `:namespace`:
       expose :time_zone
     end
   end
+
+  user = User.new(id: 42, locale: 'en-us', time_zone: 'UTC')
+  json = RubySerializer.as_json user
+
+  # { id: 42, i18n: { locale: 'en-us', time_zone: 'UTC' } }
 ```
 
 ### Exposing associations
