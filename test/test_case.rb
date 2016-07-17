@@ -1,4 +1,4 @@
-require_relative '../lib/ruby_serializer'
+require_relative '../lib/ruby-serializer'
 
 require 'minitest/autorun'
 require 'minitest/pride'

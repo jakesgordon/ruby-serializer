@@ -9,10 +9,10 @@ module RubySerializer
 
   #------------------------------------------------------------------------------------------------
 
-  autoload :Dsl,         File.join(LIB, 'ruby_serializer/dsl')
-  autoload :Base,        File.join(LIB, 'ruby_serializer/base')
-  autoload :Field,       File.join(LIB, 'ruby_serializer/field')
-  autoload :Association, File.join(LIB ,'ruby_serializer/association')
+  autoload :Dsl,         File.join(LIB, 'ruby-serializer/dsl')
+  autoload :Base,        File.join(LIB, 'ruby-serializer/base')
+  autoload :Field,       File.join(LIB, 'ruby-serializer/field')
+  autoload :Association, File.join(LIB ,'ruby-serializer/association')
 
   #------------------------------------------------------------------------------------------------
 

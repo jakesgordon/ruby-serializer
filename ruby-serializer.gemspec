@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-require_relative 'lib/ruby_serializer'
+require_relative 'lib/ruby-serializer'
 
 Gem::Specification.new do |s|
 
