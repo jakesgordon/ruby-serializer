@@ -2,7 +2,7 @@ module RubySerializer
 
   #------------------------------------------------------------------------------------------------
 
-  VERSION     = '1.0.0'
+  VERSION     = '1.0.1'
   SUMMARY     = 'Serialize POROs to JSON'
   DESCRIPTION = 'A general purpose library for serializing plain old ruby objects (POROs) into JSON using a declarative DSL'
   LIB         = File.dirname(__FILE__)
