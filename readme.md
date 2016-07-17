@@ -1,6 +1,6 @@
 # Ruby Serializer (v0.0.1)
 
-The ruby-serializer is a general purpose library for serializing models (e.g, an ActiveModel or a PORO)
+A general purpose library for serializing models (e.g, an ActiveModel or a PORO)
 into JSON using a declarative DSL. 
 
 ## Installation
@@ -94,7 +94,7 @@ Ok, that was very basic, but with RubySerializer you can also:
   * ActionController integration
   * documentation
 
-# Future Features
+# Roadmap
 
   * Extensibility with custom Field types
  
