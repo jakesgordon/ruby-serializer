@@ -3,13 +3,11 @@ module RubySerializer
 
     extend RubySerializer::Dsl
 
-    attr_reader :scope
     attr_reader :options, :include # only populated during #serialize and (temporarily) stores the #serialize options to make
                                    # them available to any potential :value, :only and :unless lambdas in the derived serializer
 
-    def initialize(resource, scope)
+    def initialize(resource)
       @resource = resource
-      @scope    = scope
     end
 
     def serialize(options = {})
@@ -32,7 +30,7 @@ module RubySerializer
 
     def serialize_array(options)
       resource.map do |item|
-        serializer = RubySerializer.build(item, scope: scope)
+        serializer = RubySerializer.build(item)
         serializer.serialize options.merge(root: nil)
       end
     end

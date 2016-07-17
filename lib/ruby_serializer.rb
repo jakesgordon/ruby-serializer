@@ -17,7 +17,7 @@ module RubySerializer
 
   def self.build(resource, options = {})
     serializer_class = options[:with] || options[:serializer] || detect_serializer(resource)
-    serializer_class.new(resource, options[:scope])
+    serializer_class.new(resource)
   end
 
   #------------------------------------------------------------------------------------------------
@@ -25,18 +25,17 @@ module RubySerializer
   def self.serialize(resource, options = {})
     build_options = {
       with:       options.delete(:with),
-      serializer: options.delete(:serializer),
-      scope:      options.delete(:scope)
+      serializer: options.delete(:serializer)
     }
     build(resource, build_options).serialize(options)
   end
 
   #------------------------------------------------------------------------------------------------
 
-  def self.detect_serializer(resource, scope = nil)
+  def self.detect_serializer(resource)
     return RubySerializer::Base if resource.respond_to?(:to_ary)
     namespace = resource.class.name.split("::")
-    scope ||= Kernel.const_get namespace[0...-1].join("::") if namespace.length > 1
+    scope   = Kernel.const_get namespace[0...-1].join("::") if namespace.length > 1
     scope ||= Kernel
     name = namespace.last
     scope.const_get "#{name}Serializer"
