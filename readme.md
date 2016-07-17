@@ -1,4 +1,4 @@
-# Ruby Serializer (v0.0.1)
+# Ruby Serializer (v1.0.0)
 
 A general purpose library for serializing models (e.g, an ActiveModel or a PORO)
 into JSON using a declarative DSL. 
