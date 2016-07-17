@@ -1,3 +1,5 @@
+/ruby-serializer*.gem
+
 /.bundle
 /log/*
 /tmp/*
