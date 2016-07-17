@@ -12,7 +12,9 @@ module RubySerializer
 
     Resource = OpenStruct
 
-    #----------------------------------------------------------------------------------------------
+    #==============================================================================================
+    # Sample Serializers
+    #==============================================================================================
 
     class BasicSerializer < RubySerializer::Base
       expose :id
@@ -20,11 +22,15 @@ module RubySerializer
       expose :email
     end
 
+    #----------------------------------------------------------------------------------------------
+
     class RenamingSerializer < RubySerializer::Base
       expose :id
       expose :name,       as:   :user_name
       expose :user_email, from: :email
     end
+
+    #----------------------------------------------------------------------------------------------
 
     class NamespaceSerializer < RubySerializer::Base
       expose :id
@@ -34,6 +40,8 @@ module RubySerializer
       end
     end
 
+    #----------------------------------------------------------------------------------------------
+
     class CustomValueSerializer < RubySerializer::Base
       expose :id
       expose :static,  value: 'static value'
@@ -41,6 +49,8 @@ module RubySerializer
       expose :dynamic, value: -> { "dynamic value (#{resource.name})" }
       expose :empty,   value: nil
     end
+
+    #----------------------------------------------------------------------------------------------
 
     class ConditionalSerializer < RubySerializer::Base
       expose :id
@@ -54,6 +64,8 @@ module RubySerializer
       expose :unless_dynamic, value: 'unless dynamic', unless: -> { resource.show }
     end
 
+    #----------------------------------------------------------------------------------------------
+
     class CustomResourceNameSerializer < RubySerializer::Base
       serializes :user
       expose :id
@@ -62,46 +74,60 @@ module RubySerializer
       expose :show_unless, value: 'show unless', unless: -> { user.show }
     end
 
-    #----------------------------------------------------------------------------------------------
+    #==============================================================================================
+    # TESTS
+    #==============================================================================================
 
     def test_expose_attributes_unchanged
       resource = Resource.new(id: ID, name: NAME, email: EMAIL, secret: SECRET)
-      json = RubySerializer.serialize resource, with: BasicSerializer
-      assert_set   [ :id, :name, :email ], json.keys
-      assert_equal ID,    json[:id]
-      assert_equal NAME,  json[:name]
-      assert_equal EMAIL, json[:email]
+      json     = RubySerializer.serialize resource, with: BasicSerializer
+      expected = [ :id, :name, :email ]
+      assert_set   expected, json.keys
+      assert_equal ID,       json[:id]
+      assert_equal NAME,     json[:name]
+      assert_equal EMAIL,    json[:email]
     end
+
+    #----------------------------------------------------------------------------------------------
 
     def test_expose_renamed_attributes
       resource = Resource.new(id: ID, name: NAME, email: EMAIL, secret: SECRET)
-      json = RubySerializer.serialize resource, with: RenamingSerializer
-      assert_set   [ :id, :user_name, :user_email ], json.keys
-      assert_equal ID,    json[:id]
-      assert_equal NAME,  json[:user_name]
-      assert_equal EMAIL, json[:user_email]
+      json     = RubySerializer.serialize resource, with: RenamingSerializer
+      expected = [ :id, :user_name, :user_email ]
+      assert_set   expected, json.keys
+      assert_equal ID,       json[:id]
+      assert_equal NAME,     json[:user_name]
+      assert_equal EMAIL,    json[:user_email]
     end
+
+    #----------------------------------------------------------------------------------------------
 
     def test_expose_namespaced_attributes
       resource = Resource.new(id: ID, name: NAME, email: EMAIL, secret: SECRET)
-      json = RubySerializer.serialize resource, with: NamespaceSerializer
-      assert_set   [ :id, :user ],    json.keys
+      json     = RubySerializer.serialize resource, with: NamespaceSerializer
+      expected = [ :id, :user ]
+      assert_set   expected,          json.keys
       assert_equal ID,                json[:id]
       assert_equal NAME,              json[:user][:name]
       assert_equal EMAIL,             json[:user][:email]
       assert_equal [ :name, :email ], json[:user].keys
     end
 
+    #----------------------------------------------------------------------------------------------
+
     def test_expose_attributes_with_custom_values
       resource = Resource.new(id: ID, name: NAME, method_value: 'method value')
-      json = RubySerializer.serialize resource, with: CustomValueSerializer
-      assert_set [ :id, :static, :dynamic, :method, :empty ], json.keys
-      assert_equal ID, json[:id]
+      json     = RubySerializer.serialize resource, with: CustomValueSerializer
+      expected = [ :id, :static, :dynamic, :method, :empty ]
+      assert_set   expected,               json.keys
+      assert_equal ID,                     json[:id]
       assert_equal 'static value',         json[:static]
       assert_equal 'dynamic value (Name)', json[:dynamic]
       assert_equal 'method value',         json[:method]
       assert_equal nil,                    json[:empty]
     end
+
+    #----------------------------------------------------------------------------------------------
 
     def test_expose_attributes_conditionally
       show        = RubySerializer.serialize Resource.new(id: ID, show: true),  with: ConditionalSerializer
@@ -112,17 +138,19 @@ module RubySerializer
       assert_set [ :id, :only_true, :unless_false, :unless_method, :unless_dynamic ], unspecified.keys
     end
 
+    #----------------------------------------------------------------------------------------------
+
     def test_expose_attributes_using_custom_resource_name
       resource = Resource.new(id: ID, value: SECRET)
-      json = RubySerializer.serialize resource, with: CustomResourceNameSerializer
-      assert_set [ :id, :value, :show_unless ], json.keys
-      assert_equal ID,                          json[:id]
-      assert_equal "value is #{SECRET}",        json[:value]
-      assert_equal "show unless",               json[:show_unless]
+      json     = RubySerializer.serialize resource, with: CustomResourceNameSerializer
+      expected = [ :id, :value, :show_unless ]
+      assert_set   expected,             json.keys
+      assert_equal ID,                   json[:id]
+      assert_equal "value is #{SECRET}", json[:value]
+      assert_equal "show unless",        json[:show_unless]
     end
 
     #----------------------------------------------------------------------------------------------
 
   end
 end
-

@@ -23,7 +23,6 @@ Coming soon...
   * :has_one
   * :has_many
   * :includes
-  * serialize array
   * serializer entity errors
   * ActionController integration
  

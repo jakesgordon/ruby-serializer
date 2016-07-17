@@ -34,6 +34,7 @@ module RubySerializer
   #------------------------------------------------------------------------------------------------
 
   def self.detect_serializer(resource, scope = nil)
+    return RubySerializer::Base if resource.respond_to?(:to_ary)
     namespace = resource.class.name.split("::")
     scope ||= Kernel.const_get namespace[0...-1].join("::") if namespace.length > 1
     scope ||= Kernel

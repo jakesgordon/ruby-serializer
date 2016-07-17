@@ -31,7 +31,10 @@ module RubySerializer
     attr_reader :resource
 
     def serialize_array(options)
-      raise NotImplementedError
+      resource.map do |item|
+        serializer = RubySerializer.build(item, scope: scope)
+        serializer.serialize options.merge(root: nil)
+      end
     end
 
     def serialize_object(options)
